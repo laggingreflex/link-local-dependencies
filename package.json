@@ -1,0 +1,8 @@
+{
+  "name": "link-local-dependencies",
+  "version": "0.0.0",
+  "description": "Link local paths in node_modules",
+  "main": "index.js",
+  "bin": "index.js",
+  "repository": "laggingreflex/link-local-dependencies"
+}
