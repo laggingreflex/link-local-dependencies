@@ -21,6 +21,9 @@ for (const name in localDependencies) {
   } else {
     existingPath = Path.join(cwd, existingPath);
   }
+  if (!fs.existsSync(existingPath)) {
+    console.warn(`WARNING: Specified path {"${name}": "${localDependencies[name]}"} doesn't exist`)
+  }
   const newPath = node_modules(name);
   if (fs.existsSync(newPath)) {
     const stats = fs.lstatSync(newPath);
