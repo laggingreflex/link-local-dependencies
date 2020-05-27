@@ -22,20 +22,24 @@ for (const name in localDependencies) {
     existingPath = Path.join(cwd, existingPath);
   }
   if (!fs.existsSync(existingPath)) {
-    console.warn(`WARNING: Specified path {"${name}": "${localDependencies[name]}"} doesn't exist`)
+    console.warn(`WARNING: Specified path doesn't exist: {"${name}": "${localDependencies[name]}"}`)
   }
   const newPath = node_modules(name);
-  if (fs.existsSync(newPath)) {
-    const stats = fs.lstatSync(newPath);
-    if (!stats.isSymbolicLink()) {
-      throw new Error(`Cannot link to 'node_modules/${name}', path already exists`);
-    } else {
-      try {
-        fs.unlinkSync(newPath);
-      } catch (error) {
-        throw new Error(`Couldn't remove existing link to 'node_modules/${name}'. ${error.message}`);
-      }
-    }
+  let exists = true;
+  let isSymbolicLink = false;
+  try {
+    isSymbolicLink = fs.lstatSync(newPath).isSymbolicLink();
+  } catch (error) {
+    if (error.code === 'ENOENT') exists = false;
+    else throw error;
+  }
+  if (exists && !isSymbolicLink) {
+    throw new Error(`Cannot link, path already exists: 'node_modules/${name}'`);
+  }
+  if (isSymbolicLink) try {
+    fs.unlinkSync(newPath);
+  } catch (error) {
+    throw new Error(`Couldn't remove existing link to 'node_modules/${name}'. ${error.message}`);
   }
   fs.symlinkSync(existingPath, newPath, 'dir');
   console.log(`${existingPath} -> ${newPath}`);
