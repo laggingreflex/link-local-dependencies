@@ -3,6 +3,7 @@
 const os = require('os');
 const fs = require('fs');
 const Path = require('path');
+const CP = require('child_process');
 
 const cwd = process.cwd();
 const homedir = os.homedir();
@@ -43,4 +44,7 @@ for (const name in localDependencies) {
   }
   fs.symlinkSync(existingPath, newPath, 'dir');
   console.log(`${existingPath} -> ${newPath}`);
+  if (fs.existsSync(Path.join(existingPath, 'package.json'))) {
+    CP.spawnSync('npm', ['i'], { cwd: existingPath, shell: true, stdio: 'inherit' });
+  }
 }
