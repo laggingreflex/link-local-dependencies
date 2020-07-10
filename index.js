@@ -44,7 +44,9 @@ for (const name in localDependencies) {
   }
   fs.symlinkSync(existingPath, newPath, 'dir');
   console.log(`${existingPath} -> ${newPath}`);
-  if (fs.existsSync(Path.join(existingPath, 'package.json'))) {
+  const sameAsCwd = existingPath === cwd;
+  const containsPackageJson = fs.existsSync(Path.join(existingPath, 'package.json'));
+  if (!sameAsCwd && containsPackageJson) {
     CP.spawnSync('npm', ['i'], { cwd: existingPath, shell: true, stdio: 'inherit' });
   }
 }
